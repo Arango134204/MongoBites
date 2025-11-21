@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Nuevo pedido - MongoBites{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Nuevo pedido</h1>
+  <a href="{{ url_for('pedidos_list') }}" class="btn btn-outline-secondary">⏪ Volver</a>
+</div>
+
+<form action="{{ url_for('pedidos_crear') }}" method="POST" class="card p-3">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Cliente</label>
+      <select name="id_cliente" class="form-select" required>
+        <option value="" selected disabled>Selecciona un cliente...</option>
+        {% for c in clientes %}
+          <option value="{{ c._id }}">{{ c.nombre }}{% if c.ciudad %} — {{ c.ciudad }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Producto</label>
+      <select name="id_producto" class="form-select" required>
+        <option value="" selected disabled>Selecciona un producto...</option>
+        {% for pr in productos %}
+          <option value="{{ pr._id }}">
+            {{ pr.nombre }} — ${{ '%.2f'|format(pr.precio|float) }} (Stock: {{ pr.stock }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Cantidad</label>
+      <input type="number" name="cantidad" min="1" value="1" class="form-control" required>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Método de pago</label>
+      <select name="metodo_pago" class="form-select">
+        <option value="EFECTIVO" selected>EFECTIVO</option>
+        <option value="TARJETA">TARJETA</option>
+        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+        <option value="OTRO">OTRO</option>
+      </select>
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">💾 Crear pedido</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

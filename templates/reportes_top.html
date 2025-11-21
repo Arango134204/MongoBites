@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes - Top productos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1">
+        <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('reportes_ventas_por_dia_html') }}">Ventas por día</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Top productos</li>
+      </ol>
+    </nav>
+    <h1 class="h3 mb-0">Top productos</h1>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{{ url_for('productos_list') }}">Productos</a>
+  </div>
+</div>
+
+{% if data|length == 0 %}
+  <div class="alert alert-secondary">No hay datos de ventas para mostrar.</div>
+{% else %}
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th class="text-end">Unidades</th>
+          <th class="text-end">Ingreso</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set total_u = 0 %}
+        {% set total_ing = 0.0 %}
+        {% for r in data %}
+          {% set total_u = total_u + (r.unidades or 0) %}
+          {% set total_ing = total_ing + (r.ingreso or 0.0) %}
+          <tr>
+            <td>{{ r.producto }}</td>
+            <td>{{ r.categoria }}</td>
+            <td class="text-end">{{ r.unidades }}</td>
+            <td class="text-end">${{ '%.2f'|format(r.ingreso|float) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr class="fw-semibold">
+          <td colspan="2" class="text-end">Totales</td>
+          <td class="text-end">{{ total_u }}</td>
+          <td class="text-end">${{ '%.2f'|format(total_ing) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}

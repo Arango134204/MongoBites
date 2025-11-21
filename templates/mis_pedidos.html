@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Mis pedidos - MongoBites{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Mis pedidos</h1>
+  <a href="{{ url_for('pedidos_nuevo') }}" class="btn btn-primary">
+    ➕ Nuevo pedido
+  </a>
+</div>
+
+{% if pedidos %}
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Fecha</th>
+      <th>Total</th>
+      <th>Estado</th>
+      <th>Método de pago</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in pedidos %}
+    <tr>
+      <td>{{ p.fecha.strftime("%Y-%m-%d %H:%M") if p.fecha }}</td>
+      <td>${{ '%.2f'|format(p.total|float) }}</td>
+      <td>
+        {% if p.estado == "PAGADO" %}
+          <span class="badge bg-success">Pagado</span>
+        {% elif p.estado == "CANCELADO" %}
+          <span class="badge bg-danger">Cancelado</span>
+        {% elif p.estado == "ENVIADO" %}
+          <span class="badge bg-info text-dark">Enviado</span>
+        {% else %}
+          <span class="badge bg-secondary">{{ p.estado }}</span>
+        {% endif %}
+      </td>
+      <td>{{ p.metodo_pago or "N/A" }}</td>
+      <td>
+        <a href="{{ url_for('pedido_detalle', id_pedido=p._id) }}"
+           class="btn btn-sm btn-outline-info">
+          🔍 Ver
+        </a>
+        <a href="{{ url_for('factura_pdf', id_pedido=p._id) }}"
+           class="btn btn-sm btn-outline-secondary">
+          🧾 Factura
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-info">
+  Aún no tienes pedidos registrados.
+</div>
+{% endif %}
+{% endblock %}

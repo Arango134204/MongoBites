@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Detalle pedido - MongoBites{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Detalle del Pedido</h1>
+
+  <div class="d-flex gap-2">
+    <!-- Volver -->
+    {% if current_user.is_admin %}
+      <a href="{{ url_for('pedidos_list') }}" class="btn btn-outline-secondary">⏪ Volver</a>
+    {% else %}
+      <a href="{{ url_for('mis_pedidos') }}" class="btn btn-outline-secondary">⏪ Volver</a>
+    {% endif %}
+
+    <!-- Descargar factura -->
+    <a href="{{ url_for('factura_pdf', id_pedido=pedido._id|string) }}"
+       class="btn btn-primary"
+       target="_blank">
+      📄 Descargar factura
+    </a>
+  </div>
+</div>
+
+<div class="row g-3">
+
+  <!-- INFORMACIÓN GENERAL -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white">Información general</div>
+      <div class="card-body">
+
+        <p class="mb-1"><strong>ID:</strong> {{ pedido._id }}</p>
+        <p class="mb-1"><strong>Fecha:</strong>
+          {{ pedido.fecha.strftime('%Y-%m-%d %H:%M') if pedido.fecha else '—' }}
+        </p>
+
+        <p class="mb-1">
+          <strong>Estado:</strong>
+          {% if pedido.estado == 'CREADO' %}
+            <span class="badge bg-secondary">Creado</span>
+          {% elif pedido.estado == 'PAGADO' %}
+            <span class="badge bg-success">Pagado</span>
+          {% elif pedido.estado == 'ENVIADO' %}
+            <span class="badge bg-primary">Enviado</span>
+          {% elif pedido.estado == 'CANCELADO' %}
+            <span class="badge bg-danger">Cancelado</span>
+          {% endif %}
+        </p>
+
+        <p class="mb-1"><strong>Método de pago:</strong> {{ pedido.metodo_pago or '—' }}</p>
+        <p class="mb-0"><strong>Total:</strong> ${{ '%.2f'|format(pedido.total|float) }}</p>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORMACIÓN DEL CLIENTE -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white">Cliente</div>
+      <div class="card-body">
+        {% if cliente %}
+          <p class="mb-1"><strong>Nombre:</strong> {{ cliente.nombre }}</p>
+          <p class="mb-1"><strong>Email:</strong> {{ cliente.email or '—' }}</p>
+          <p class="mb-1"><strong>Teléfono:</strong> {{ cliente.telefono or '—' }}</p>
+          <p class="mb-0"><strong>Ciudad:</strong> {{ cliente.ciudad or '—' }}</p>
+        {% else %}
+          <em class="text-muted">No se encontró el cliente asociado.</em>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLES -->
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white">Ítems del pedido</div>
+
+      <div class="card-body p-0">
+        <table class="table mb-0 table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Producto</th>
+              <th class="text-end">Cantidad</th>
+              <th class="text-end">Precio unit.</th>
+              <th class="text-end">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in detalles %}
+              <tr>
+                <td>{{ d.nombre_producto }}</td>
+                <td class="text-end">{{ d.cantidad }}</td>
+                <td class="text-end">${{ '%.2f'|format(d.precio_unit|float) }}</td>
+                <td class="text-end">${{ '%.2f'|format(d.subtotal|float) }}</td>
+              </tr>
+            {% endfor %}
+
+            {% if not detalles %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">
+                  Sin ítems
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

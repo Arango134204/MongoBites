@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if modo == "crear" %}Nuevo Cliente - MongoBites{% else %}Editar Cliente - MongoBites{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="h4 mb-4">
+    {% if modo == "crear" %}
+      ➕ Nuevo cliente
+    {% else %}
+      ✏️ Editar cliente
+    {% endif %}
+  </h1>
+
+  <form action="{% if modo=='editar' %}{{ url_for('clientes_actualizar', id=cliente._id|string) }}{% else %}{{ url_for('clientes_crear') }}{% endif %}"
+      method="POST" class="row g-3" enctype="multipart/form-data">
+
+  <div class="col-md-6">
+    <label class="form-label">Nombre</label>
+    <input type="text" name="nombre" class="form-control" required
+           value="{{ cliente.nombre if cliente else '' }}">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Ciudad</label>
+    <input type="text" name="ciudad" class="form-control"
+           value="{{ cliente.ciudad if cliente else '' }}">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control"
+           value="{{ cliente.email if cliente else '' }}">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Teléfono</label>
+    <input type="text" name="telefono" class="form-control"
+           value="{{ cliente.telefono if cliente else '' }}">
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label">Avatar (opcional)</label>
+    <input type="file" name="avatar" accept="image/*" class="form-control">
+   {% if cliente and cliente.avatar_file_id %}
+  <div class="mt-2">
+    <img src="{{ url_for('media', file_id=cliente.avatar_file_id) }}"
+         alt="avatar" style="height:60px;border-radius:50%">
+  </div>
+{% endif %}
+  </div>
+
+  {% if modo=='editar' %}
+  <div class="col-md-6 d-flex align-items-end">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="activo" name="activo"
+             {% if cliente.activo %}checked{% endif %}>
+      <label class="form-check-label" for="activo">Activo</label>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="col-12">
+    <a href="{{ url_for('clientes_list') }}" class="btn btn-outline-secondary">⬅ Volver</a>
+    <button class="btn btn-primary">{{ 'Actualizar' if modo=='editar' else 'Crear' }}</button>
+  </div>
+</form>
+
+</div>
+{% endblock %}

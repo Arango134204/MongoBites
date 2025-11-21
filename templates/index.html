@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Inicio · MongoBites{% endblock %}
+
+{% block content %}
+  <div class="py-4">
+    <h1 class="mb-3">Bienvenido a MongoBites</h1>
+    <p class="lead">Panel de administración del restaurante.</p>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Clientes</h5>
+            <p class="card-text">Consulta, crea y edita clientes.</p>
+            <a href="{{ url_for('clientes_list') }}" class="btn btn-primary">Ir a clientes</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Productos</h5>
+            <p class="card-text">Gestiona el catálogo y el stock.</p>
+            <a href="{{ url_for('productos_list') }}" class="btn btn-primary">Ir a productos</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Pedidos</h5>
+            <p class="card-text">Crea pedidos y cambia estados.</p>
+            <a href="{{ url_for('pedidos_list') }}" class="btn btn-primary">Ir a pedidos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <a href="{{ url_for('reportes_ventas_por_dia_html') }}" class="btn btn-outline-secondary">Ver reportes</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión - MongoBites{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-4 text-center">Iniciar sesión</h1>
+
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="mb-3">
+            <label class="form-label">Correo</label>
+            <input type="email" name="email" class="form-control" required value="admin@demo">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" name="password" class="form-control" required value="admin123">
+          </div>
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" type="submit">Entrar</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <small>¿No tienes cuenta?
+            <a href="{{ url_for('register') }}">Regístrate aquí</a>
+          </small>
+        </div>
+
+        <p class="text-center mt-3 mb-0">
+          <small>Usuario demo: <strong>admin@demo</strong> · Clave: <strong>admin123</strong></small>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

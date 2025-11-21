@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Productos - MongoBites{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Productos</h1>
+  <a href="{{ url_for('productos_nuevo') }}" class="btn btn-primary">➕ Nuevo producto</a>
+</div>
+
+<table class="table table-striped align-middle">
+ <thead class="table-dark">
+  <tr>
+    <th>Imagen</th>
+    <th>Nombre</th>
+    <th>Categoría</th>
+    <th>Precio</th>
+    <th>Stock</th>
+    <th>Activo</th>
+    <th>Acciones</th>
+  </tr>
+</thead>
+<tbody>
+  {% for p in productos %}
+  <tr>
+    <td>
+      {% if p.image_data %}
+        <img src="{{ url_for('producto_imagen', id=p._id|string) }}"
+             style="height:40px;width:40px;object-fit:cover;border-radius:4px;">
+      {% else %}
+        —
+      {% endif %}
+    </td>
+    <td>{{ p.nombre }}</td>
+    <td>{{ p.categoria }}</td>
+    <td>${{ '%.2f'|format(p.precio|float) }}</td>
+    <td>{{ p.stock }}</td>
+    <td>
+      {% if p.activo %}
+        <span class="badge bg-success">Sí</span>
+      {% else %}
+        <span class="badge bg-danger">No</span>
+      {% endif %}
+    </td>
+    <td>
+      <a href="{{ url_for('productos_editar', id=p._id|string) }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+      <form action="{{ url_for('productos_eliminar', id=p._id|string) }}" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este producto?');">
+        <button type="submit" class="btn btn-sm btn-outline-danger">🗑️ Eliminar</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+{% endblock %}

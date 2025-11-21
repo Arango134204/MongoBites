@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Pedidos - MongoBites{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Pedidos</h1>
+  <a href="{{ url_for('pedidos_nuevo') }}" class="btn btn-primary">➕ Nuevo pedido</a>
+</div>
+
+{% if pedidos|length == 0 %}
+  <div class="alert alert-secondary">No hay pedidos aún.</div>
+{% else %}
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Cliente</th>
+      <th>Fecha</th>
+      <th>Total</th>
+      <th>Estado</th>
+      <th>Método de pago</th>
+      <th style="width: 360px;">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in pedidos %}
+    <tr>
+      <td>{{ p.nombre_cliente }}</td>
+      <td>{{ p.fecha.strftime('%Y-%m-%d %H:%M') if p.fecha else '—' }}</td>
+      <td>${{ '%.2f'|format(p.total|float) }}</td>
+      <td>
+        {% set est = (p.estado or '').upper() %}
+        {% if est == 'CREADO' %}
+          <span class="badge bg-secondary">Creado</span>
+        {% elif est == 'PAGADO' %}
+          <span class="badge bg-success">Pagado</span>
+        {% elif est == 'ENVIADO' %}
+          <span class="badge bg-primary">Enviado</span>
+        {% elif est == 'CANCELADO' %}
+          <span class="badge bg-danger">Cancelado</span>
+        {% else %}
+          <span class="badge bg-light text-dark">{{ p.estado or '—' }}</span>
+        {% endif %}
+      </td>
+      <td>{{ p.metodo_pago or '—' }}</td>
+
+      <td class="d-flex gap-2">
+        <!-- Ver detalle -->
+        <a href="{{ url_for('pedido_detalle', id_pedido=p._id) }}"
+           class="btn btn-sm btn-outline-info">
+          🔍 Ver
+        </a>
+
+        <!-- Descargar factura PDF -->
+        <a href="{{ url_for('factura_pdf', id_pedido=p._id) }}"
+           class="btn btn-sm btn-outline-secondary"
+           target="_blank">
+          📄 Factura
+        </a>
+
+        <!-- Cambiar estado -->
+        <form action="{{ url_for('cambiar_estado_pedido', id_pedido=p._id) }}"
+              method="POST"
+              class="d-flex gap-2">
+          <select name="estado" class="form-select form-select-sm w-auto">
+            <option disabled selected>Estado</option>
+            <option value="PAGADO">Pagar</option>
+            <option value="ENVIADO">Enviar</option>
+            <option value="CANCELADO">Cancelar</option>
+          </select>
+          <button type="submit" class="btn btn-sm btn-warning">Actualizar</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

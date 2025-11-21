@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Factura Pedido {{ pedido._id }}</title>
+  <style>
+    /* Estilos simples compatibles con xhtml2pdf */
+
+    body {
+      font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      color: #333333;
+    }
+
+    .invoice-wrapper {
+      width: 100%;
+      padding: 10px;
+    }
+
+    .header-table,
+    .info-table,
+    .items-table,
+    .totals-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+
+    .header-table td {
+      vertical-align: top;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+
+    .company-name {
+      font-size: 18pt;
+      font-weight: bold;
+      color: #e67e22;
+    }
+
+    .company-subtitle {
+      font-size: 10pt;
+      color: #555555;
+    }
+
+    .section-title {
+      font-size: 11pt;
+      font-weight: bold;
+      margin-bottom: 4px;
+      background-color: #f2f2f2;
+      padding: 4px;
+    }
+
+    .info-table td {
+      padding: 2px 4px;
+      vertical-align: top;
+    }
+
+    .items-table th {
+      background-color: #333333;
+      color: #ffffff;
+      font-size: 10pt;
+      padding: 4px;
+      text-align: left;
+      border: 1px solid #555555;
+    }
+
+    .items-table td {
+      padding: 3px 4px;
+      font-size: 10pt;
+      border: 1px solid #cccccc;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .totals-table td {
+      padding: 3px 4px;
+      font-size: 10pt;
+    }
+
+    .totals-table .label {
+      text-align: right;
+      font-weight: bold;
+    }
+
+    .footer {
+      margin-top: 15px;
+      font-size: 9pt;
+      text-align: center;
+      color: #777777;
+    }
+
+    .badge-estado {
+      font-weight: bold;
+      font-size: 9pt;
+    }
+  </style>
+</head>
+<body>
+<div class="invoice-wrapper">
+
+  <!-- ENCABEZADO -->
+  <table class="header-table">
+    <tr>
+      <td style="width: 60%;">
+        <!-- Logo: debes tener /static/logo.png -->
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Logo MongoBites">
+        <div class="company-name">MongoBites</div>
+        <div class="company-subtitle">
+          Sistema de Pedidos &middot; Demo Restaurante<br>
+          www.mongobites.local
+        </div>
+      </td>
+      <td style="width: 40%; text-align: right;">
+        <h2 style="margin: 0; padding: 0;">FACTURA</h2>
+        <p style="margin: 4px 0 0 0;">
+          <strong>Nº pedido:</strong> {{ pedido._id }}<br>
+          <strong>Fecha pedido:</strong>
+          {% if pedido.fecha %}
+            {{ pedido.fecha.strftime('%Y-%m-%d %H:%M') }}
+          {% else %}
+            —
+          {% endif %}<br>
+          <strong>Generado:</strong> {{ generado.strftime('%Y-%m-%d %H:%M') }}<br>
+          <strong>Método de pago:</strong> {{ pedido.metodo_pago or '—' }}<br>
+          <strong>Estado:</strong>
+          <span class="badge-estado">
+            {{ pedido.estado or 'CREADO' }}
+          </span>
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- DATOS CLIENTE / ENVÍO -->
+  <div class="section-title">Datos del cliente</div>
+  <table class="info-table">
+    <tr>
+      <td style="width: 50%;">
+        {% if cliente %}
+          <strong>Nombre:</strong> {{ cliente.nombre }}<br>
+          <strong>Email:</strong> {{ cliente.email or '—' }}<br>
+          <strong>Teléfono:</strong> {{ cliente.telefono or '—' }}<br>
+        {% else %}
+          <em>No se encontró el cliente asociado.</em>
+        {% endif %}
+      </td>
+      <td style="width: 50%;">
+        <strong>Ciudad / Dirección:</strong><br>
+        {{ cliente.ciudad or '—' if cliente else '—' }}<br>
+        <!-- Si más adelante agregas dirección, la puedes mostrar aquí -->
+      </td>
+    </tr>
+  </table>
+
+  <!-- TABLA DE ÍTEMS -->
+  <div class="section-title">Detalle de la compra</div>
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th class="text-right">Cantidad</th>
+        <th class="text-right">Precio unit.</th>
+        <th class="text-right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in detalles %}
+        <tr>
+          <td>{{ d.nombre_producto }}</td>
+          <td class="text-right">{{ d.cantidad }}</td>
+          <td class="text-right">
+            ${{ '%.2f'|format(d.precio_unit|float) }}
+          </td>
+          <td class="text-right">
+            ${{ '%.2f'|format(d.subtotal|float) }}
+          </td>
+        </tr>
+      {% endfor %}
+
+      {% if not detalles %}
+        <tr>
+          <td colspan="4" class="text-center">
+            No hay ítems registrados para este pedido.
+          </td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- TOTALES -->
+  <table class="totals-table">
+    <tr>
+      <td style="width: 70%;"></td>
+      <td style="width: 30%;">
+        <table style="width: 100%;">
+          <!-- Si luego quieres IVA, descuentos, etc, los añades aquí -->
+          <tr>
+            <td class="label">Total a pagar:</td>
+            <td class="text-right">
+              ${{ '%.2f'|format(pedido.total|float) }}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <!-- NOTA FINAL -->
+  <div class="footer">
+    Gracias por tu compra en <strong>MongoBites</strong> 🍔<br>
+    Este documento es generado automáticamente por el sistema.
+  </div>
+
+</div>
+</body>
+</html>

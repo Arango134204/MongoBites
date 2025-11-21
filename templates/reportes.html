@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Reportes - Ventas por día{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3">Ventas por día</h1>
+  <a class="btn btn-outline-secondary" href="{{ url_for('reportes_pdf') }}">⬇️ Descargar PDF</a>
+</div>
+
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Fecha</th>
+      <th>Pedidos</th>
+      <th>Ventas del día</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in data %}
+    <tr>
+      <td>{{ r._id }}</td>
+      <td>{{ r.pedidos }}</td>
+      <td>${{ '%.0f'|format(r.ventas_del_dia|float) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
