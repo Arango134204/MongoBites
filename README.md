@@ -1,4 +1,4 @@
-[# MongoBites – Sistema de Gestión de Pedidos con Flask + MongoDB
+## MongoBites – Sistema de Gestión de Pedidos con Flask + MongoDB
 
 MongoBites es una aplicación web desarrollada con **Flask** y **MongoDB (Atlas)** para gestionar clientes, productos y pedidos de un restaurante / tienda de comida rápida.  
 Incluye autenticación con roles, generación de facturas en PDF, reportes de ventas y manejo de imágenes (avatares y fotos de productos) en la base de datos.
